@@ -2,13 +2,14 @@
 // custom modules
 const wordDisplayService = require('./word-display-service');
 const wordPlayService = require('./word-play-service');
+const chalk = require('chalk');
 
 const start = async () => {
-    
+    console.log(chalk.blue("******** Hello, User Welcome to CommandLineDictionary  ********"))
     try {
         const args = process.argv.slice(2);
     
-        console.log(args);
+        // console.log(args);
     
         if (args[0] === './dict') {
             if (args.length === 1) {
@@ -16,10 +17,11 @@ const start = async () => {
             } else {
                 let operation = args[1];
                 let keyword = args[2];
-    
+                
                 switch (operation) {
                     case 'def': {
                         if (keyword) {
+                            console.log(chalk.yellow("\tKeyword  : "), keyword);
                             return await wordDisplayService.displayDefOfWord(keyword);
                             break;
                         } else {
@@ -28,6 +30,7 @@ const start = async () => {
                     }
                     case 'syn': {
                         if (keyword) {
+                            console.log(chalk.yellow("\tKeyword : "), keyword);
                             return await wordDisplayService.displaySynOfWord(keyword);
                             break;
                         } else {
@@ -37,7 +40,8 @@ const start = async () => {
                     }
                     case 'ant': {
                         if (keyword) {
-                            return await wordDisplayService.dislayAntOfWord(keyword);
+                            console.log(chalk.yellow("\tKeyword   : "), keyword);
+                            return await wordDisplayService.displayAntOfWord(keyword);
                             break;
                         } else {
                             throw "Word Must be Given";
@@ -46,6 +50,7 @@ const start = async () => {
                     }
                     case 'ex': {
                         if (keyword) {
+                            console.log(chalk.yellow("\tKeyword  : "), keyword);
                             return await wordDisplayService.displayExmplsOfWord(keyword);
                             break;
                         } else {
@@ -55,6 +60,7 @@ const start = async () => {
                     }
                     case 'dict': {
                         if (keyword) {
+                            console.log(chalk.yellow("\tKeyword  : "), keyword);
                             return await wordDisplayService.displayFullDictOfWord(keyword);
                             break;
                         } else {
@@ -63,6 +69,7 @@ const start = async () => {
                     }
                     case 'play': {
                         if(!keyword) {
+                           
                             return await wordPlayService.playWordGame();
                             break;
                         } else {
@@ -72,6 +79,7 @@ const start = async () => {
                     default: {
                         keyword = args[1];
                         if(!args[2]) {
+                            console.log(chalk.yellow("\tKeyword  : "), keyword);
                             return await wordDisplayService.displayFullDictOfWord(keyword);
                         } else {
                             throw "Invalid Third Argument Given";
@@ -91,7 +99,7 @@ const start = async () => {
 
 // starting of word dictionary
 start()
-    .then(message => console.log("******** Thank You User Hope To See You Again ********"))
-    .catch(err => console.log(err))
+    .then(message => console.log(chalk.blue("******** Thank You User, Hope To See You Again ********")))
+    .catch(err => console.log(chalk.red("Error is ::::::: "+err)));
 
 
