@@ -100,6 +100,6 @@ const start = async () => {
 // starting of word dictionary
 start()
     .then(message => console.log(chalk.blue("******** Thank You User, Hope To See You Again ********")))
-    .catch(err => console.log(chalk.red("Error is ::::::: "+err)));
+    .catch(err => console.log(chalk.red("\tError is ::::::: "+err)));
 
 

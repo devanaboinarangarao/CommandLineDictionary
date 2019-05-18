@@ -1,5 +1,4 @@
 const inquirer = require('inquirer')
-const wordPlayService = require('./word-play-service');
 const chalk = require('chalk');
 
 const playWordGame = async () => {
@@ -8,10 +7,7 @@ const playWordGame = async () => {
         let randomWordRes = await wordDisplayService.fetchDataService(null, null);
 
         randomWordRes = randomWordRes.data;
-        // randomWordRes = {
-        //     "id": "prime",
-        //     "word": "prime"
-        // }
+
         let keyword = randomWordRes.word;
         console.log(chalk.yellow("\tKeyword  : "), keyword);
         let defRes = await wordDisplayService.displayDefOfWord(keyword)
@@ -20,52 +16,29 @@ const playWordGame = async () => {
 
         relateRes = relateRes.data;
 
-        // relateRes = [
-        //     {
-        //         "relationshipType": "antonym",
-        //         "words": [
-        //             "stop",
-        //             "originate",
-        //             "invent",
-        //             "dislocate",
-        //             "empty",
-        //             "sally",
-        //             "lead"
-        //         ]
-        //     },
-        //     {
-        //         "relationshipType": "synonym",
-        //         "words": [
-        //             "begin",
-        //             "startle",
-        //             "alarm",
-        //             "rouse",
-        //             "originate",
-        //             "invent",
-        //             "dislocate",
-        //             "empty",
-        //             "sally",
-        //             "lead"
-        //         ]
-        //     }
-        // ]
         let index = relateRes.findIndex(resObj => { return resObj.relationshipType === 'synonym' })
         let index2 = relateRes.findIndex(resObj => { return resObj.relationshipType === 'antonym' })
 
         let synonyms = [], antonym = [];
-        if (index != -1) {
+
+        if(index2 !== -1) {
+            antonyms = relateRes[index2]["words"];
+        }
+        if (index !== -1) {
             synonyms = relateRes[index]["words"];
             console.log(chalk.yellow("\tSynonym : ") + synonyms[0]);
         } else {
             console.log(chalk.red("\tNo Synonyms Found "))
 
             if (index2 != -1) {
-                antonyms = relateRes[index]["words"];
                 console.log(chalk.yellow("\tAntonyms : ") + antonyms[0]);
+                antonyms = antonyms.slice(1);
             }
         }
 
         let isQuit = false;
+
+        synonyms = synonyms.slice(1)
 
         let isFound = await isWordFound(synonyms, keyword);
 
@@ -95,9 +68,35 @@ const playWordGame = async () => {
                         break;
                     }
                     case "2": {
-                        let str = keyword;
-                        let hintKeyword = str.split('').sort(function(){return 0.5-Math.random()}).join('');
-                        console.log(chalk.green("\t Hint : "), hintKeyword);
+
+                        let num = Math.ceil((Math.random() * 4));
+
+                        let defRes = await wordDisplayService.fetchDataService(keyword, 'definitions');
+                        defRes = defRes.data;
+                        if (num === 1) {
+                            let str = keyword;
+                            let hintKeyword = str.split('').sort(function () { return 0.5 - Math.random() }).join('');
+                            console.log(chalk.green("\t Hint : "), hintKeyword);
+                            break;
+                        } else if (num === 2) {
+                            console.log(chalk.green("\t Hint : "), defRes[0].text);
+
+                        } else if (num === 3) {
+                            if (synonyms) {
+                                console.log(chalk.green("\t Hint : "), synonyms[0]);
+                            } else {
+
+                                console.log(chalk.green("\t Hint : "), defRes[0].text);
+                            }
+                        } else {
+                            if (index2 !== -1) {
+
+                                console.log(chalk.green("\t Hint : "), antonyms[0]);
+                            } else {
+
+                                console.log(chalk.green("\t Hint : "), defRes[0].text);
+                            }
+                        }
                         break;
                     }
                     case "3": {
