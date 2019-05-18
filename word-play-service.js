@@ -9,29 +9,32 @@ const playWordGame = async () => {
         randomWordRes = randomWordRes.data;
 
         let keyword = randomWordRes.word;
-        console.log(chalk.yellow("\tKeyword  : "), keyword);
-        let defRes = await wordDisplayService.displayDefOfWord(keyword)
+
+
+        let defRes = await wordDisplayService.fetchDataService(keyword, 'definitions');
+        defRes = defRes.data;
+
+        console.log(chalk.green("\tDefinition "), defRes[0].text);
 
         let relateRes = await wordDisplayService.fetchDataService(keyword, 'relatedWords');
-
         relateRes = relateRes.data;
 
         let index = relateRes.findIndex(resObj => { return resObj.relationshipType === 'synonym' })
         let index2 = relateRes.findIndex(resObj => { return resObj.relationshipType === 'antonym' })
 
-        let synonyms = [], antonym = [];
+        let synonyms = [], antonyms = [];
 
-        if(index2 !== -1) {
+        if (index2 !== -1) {
             antonyms = relateRes[index2]["words"];
         }
         if (index !== -1) {
             synonyms = relateRes[index]["words"];
             console.log(chalk.yellow("\tSynonym : ") + synonyms[0]);
         } else {
-            console.log(chalk.red("\tNo Synonyms Found "))
+            // console.log(chalk.red("\tNo Synonyms Found "))
 
             if (index2 != -1) {
-                console.log(chalk.yellow("\tAntonyms : ") + antonyms[0]);
+                console.log(chalk.yellow("\tAntonym : ") + antonyms[0]);
                 antonyms = antonyms.slice(1);
             }
         }
@@ -39,6 +42,7 @@ const playWordGame = async () => {
         let isQuit = false;
 
         synonyms = synonyms.slice(1)
+        defRes = defRes.slice(1);
 
         let isFound = await isWordFound(synonyms, keyword);
 
@@ -63,6 +67,8 @@ const playWordGame = async () => {
                     case "1": {
                         isFound = await isWordFound(synonyms, keyword);
                         if (isFound) {
+                            console.log(chalk.yellow("\tKeyword  : "), keyword);
+                            let finalRes = await wordDisplayService.displayFullDictOfWord(keyword);
                             choiceValue = '3';
                         }
                         break;
@@ -71,39 +77,64 @@ const playWordGame = async () => {
 
                         let num = Math.ceil((Math.random() * 4));
 
-                        let defRes = await wordDisplayService.fetchDataService(keyword, 'definitions');
-                        defRes = defRes.data;
+                        // console.log("number ", num)
                         if (num === 1) {
                             let str = keyword;
                             let hintKeyword = str.split('').sort(function () { return 0.5 - Math.random() }).join('');
-                            console.log(chalk.green("\t Hint : "), hintKeyword);
+                            console.log(chalk.green("\tZumbled Hint : "), hintKeyword);
                             break;
                         } else if (num === 2) {
-                            console.log(chalk.green("\t Hint : "), defRes[0].text);
+                            if (defRes.length > 0) {
+                                console.log(chalk.green("\tHint : "), defRes[0].text);
+                                defRes = defRes.slice(1);
+                            } else {
+                                console.log(chalk.green('\tNo More Hints Available'))
+                            }
 
                         } else if (num === 3) {
                             if (synonyms) {
-                                console.log(chalk.green("\t Hint : "), synonyms[0]);
+                                if (synonyms.length > 0) {
+                                    console.log(chalk.green("\tSynonym Hint : "), synonyms[0]);
+                                    synonyms = synonyms.slice(1);
+                                } else {
+                                    console.log(chalk.green('\tNo More Hints Available'))
+                                }
                             } else {
-
-                                console.log(chalk.green("\t Hint : "), defRes[0].text);
+                                if (defRes.length > 0) {
+                                    console.log(chalk.green("\tHint : "), defRes[0].text);
+                                    defRes = defRes.slice(1);
+                                } else {
+                                    console.log(chalk.green('\tNo More Hints Avilable'))
+                                }
                             }
                         } else {
                             if (index2 !== -1) {
+                                if (antonyms.length > 0) {
+                                    console.log(chalk.green("\tAntonym Hint : "), antonyms[0]);
+                                    antonyms = antonyms.slice(1);
+                                } else {
+                                    console.log(chalk.green('\tNo More Hints Available'))
+                                }
 
-                                console.log(chalk.green("\t Hint : "), antonyms[0]);
                             } else {
 
-                                console.log(chalk.green("\t Hint : "), defRes[0].text);
+                                if (defRes.length > 0) {
+                                    console.log(chalk.green("\tHint : "), defRes[0].text);
+                                    defRes = defRes.slice(1);
+                                } else {
+                                    console.log(chalk.green('\tNo Hints Avilable'))
+                                }
                             }
                         }
                         break;
                     }
                     case "3": {
+                        console.log(chalk.yellow("\tKeyword  : "), keyword);
+                        let finalRes = await wordDisplayService.displayFullDictOfWord(keyword);
                         choiceValue = '3';
                         break;
                     } default: {
-                        console.log(chalk.red("Invalid Operation is given"));
+                        console.log(chalk.red("\tInvalid Operation is given"));
                     }
                 }
 

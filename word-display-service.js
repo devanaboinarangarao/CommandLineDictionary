@@ -145,7 +145,11 @@ wordDisplayService.fetchDataService = async (keyword, type) => {
     try {
 
         let response = await axios.get(finalUrl);
-        return response;
+        if(response.data) {
+            return response ;
+        } else {
+            throw "Given Word Is Not Found In API"
+        }
 
     } catch (err) {
         throw err;
