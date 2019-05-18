@@ -108,7 +108,7 @@ wordDisplayService.displayExmplsOfWord = async (keyword) => {
             }
             return true;
         } else {
-            console.log(chalk.red("No Examples Found ", keyword))
+            console.log(chalk.red("\tNo Examples Found ", keyword))
             return true;
         }
     } catch (err) {
