@@ -10,7 +10,7 @@
   "author": "Rangarao Devanaboina",
   "license": "ISC",
   "dependencies": {
-    "axios": "^0.18.0",
+    "axios": ">=0.18.1,
     "chalk": "^2.4.2",
     "inquirer": "^6.3.1"
   }
